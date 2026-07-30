@@ -61,7 +61,7 @@ Berikan jawaban HANYA dalam format JSON berikut (tanpa markdown, tanpa teks lain
 }
 
 /**
- * Call AI API — Groq (Llama 3.3 70B, gratis 14.400 req/hari)
+ * Call AI API — Groq (openai/gpt-oss-120b)
  * Untuk aktifkan: set VITE_GROQ_API_KEY di .env
  */
 export async function classifyHS(form) {
@@ -84,15 +84,10 @@ async function callGroq(prompt, apiKey) {
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'llama3-70b-8192',
+      model: 'openai/gpt-oss-120b',
       temperature: 0.1,
       max_tokens: 2048,
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
+      messages: [{ role: 'user', content: prompt }],
     }),
   })
 
@@ -104,7 +99,6 @@ async function callGroq(prompt, apiKey) {
   const data = await res.json()
   const text = data.choices?.[0]?.message?.content || ''
 
-  // Strip markdown code fences jika ada
   const cleaned = text.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()
 
   try {
