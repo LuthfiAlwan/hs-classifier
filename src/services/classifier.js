@@ -1,4 +1,5 @@
 import kumhsRules from '../data/kumhs_rules.json'
+import btki from '../data/btki_national.json'
 
 /**
  * Build structured prompt dari form input
@@ -25,11 +26,18 @@ export function buildPrompt(form) {
     .map((r) => `${r.rule} (trigger: ${r.trigger}): ${r.isi}`)
     .join('\n')
 
+  const btkiref = btki.data
+    .map((d) => `${d.hs8} — ${d.uraian}`)
+    .join('\n')
+
   return `Kamu adalah ahli klasifikasi HS Code berdasarkan BTKI Indonesia (PMK 26/2022).
 Tugasmu: tentukan kode HS yang paling tepat untuk barang berikut menggunakan KUM HS secara berurutan.
 
 FAKTA BARANG:
 ${facts}
+
+REFERENSI SUBPOS NASIONAL BTKI 2022 (gunakan ini untuk menentukan digit 7-8):
+${btkiref}
 
 ATURAN KUM HS (gunakan secara berurutan, hanya jika trigger-nya terpenuhi):
 ${kumhsSummary}
@@ -87,7 +95,7 @@ async function callGroq(prompt, apiKey) {
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       temperature: 0.1,
       max_tokens: 2048,
       messages: [{ role: 'user', content: prompt }],
