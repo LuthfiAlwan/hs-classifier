@@ -34,27 +34,30 @@ ${facts}
 ATURAN KUM HS (gunakan secara berurutan, hanya jika trigger-nya terpenuhi):
 ${kumhsSummary}
 
-INSTRUKSI:
-1. Mulai SELALU dari KUM HS 1. Baca uraian pos dan fakta barang.
-2. Lanjut ke KUM HS berikutnya HANYA jika triggered.
-3. Setelah pos 4-digit ditentukan, gunakan KUM HS 6 untuk subpos.
-4. Jangan memaksakan kode jika fakta tidak cukup — minta klarifikasi.
-5. Legal rules mengalahkan kemiripan nama.
+INSTRUKSI WAJIB:
+1. Seluruh jawaban HARUS dalam Bahasa Indonesia. Dilarang menggunakan Bahasa Inggris.
+2. Mulai SELALU dari KUM HS 1. Baca uraian pos dan fakta barang.
+3. Lanjut ke KUM HS berikutnya HANYA jika triggered.
+4. Setelah pos 4-digit ditentukan, gunakan KUM HS 6 untuk subpos.
+5. Kode HS harus dalam format BTKI Indonesia 8-digit (contoh: 8471.30.20, 8704.10.31).
+   Jika digit nasional (7-8) tidak dapat ditentukan dari fakta yang ada, tulis di fakta_perlu_konfirmasi.
+   JANGAN tulis .00 jika tidak yakin — lebih baik tulis 6 digit dan minta konfirmasi.
+6. Jangan memaksakan kode jika fakta tidak cukup — minta klarifikasi.
+7. Legal rules mengalahkan kemiripan nama.
 
 Berikan jawaban HANYA dalam format JSON berikut (tanpa markdown, tanpa teks lain di luar JSON):
 {
   "hs_code": "XXXX.XX.XX",
-  "uraian": "uraian lengkap pos/subpos",
+  "uraian": "uraian lengkap pos/subpos dalam Bahasa Indonesia",
   "confidence": "TINGGI" | "SEDANG" | "RENDAH",
-  "risk": "penjelasan risiko jika ada, atau null",
+  "risk": "penjelasan risiko jika ada dalam Bahasa Indonesia, atau null",
   "reasoning_steps": [
-    { "rule": "KUM HS 1", "penjelasan": "..." },
-    { "rule": "KUM HS 6", "penjelasan": "..." }
+    { "rule": "KUM HS 1", "penjelasan": "penjelasan dalam Bahasa Indonesia..." }
   ],
   "kandidat_eliminasi": [
-    { "kode": "XXXX.XX", "alasan": "..." }
+    { "kode": "XXXX.XX", "alasan": "alasan dalam Bahasa Indonesia..." }
   ],
-  "fakta_perlu_konfirmasi": ["..."],
+  "fakta_perlu_konfirmasi": ["item dalam Bahasa Indonesia..."],
   "perlu_expert_review": false,
   "alasan_expert_review": null
 }`
@@ -84,7 +87,7 @@ async function callGroq(prompt, apiKey) {
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'openai/gpt-oss-120b',
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.1,
       max_tokens: 2048,
       messages: [{ role: 'user', content: prompt }],
